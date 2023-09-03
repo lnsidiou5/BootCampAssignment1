@@ -1,11 +1,12 @@
-var http = require('http'), 
-    fs = require('fs'), 
-    port = 8080;
+var http = require("http"),
+  fs = require("fs"),
+  url = require("url");
+port = 8080;
 
 /* Global variables */
 var listingData, server;
 
-var requestHandler = function(request, response) {
+var requestHandler = function (request, response) {
   /*Investigate the request object. 
     You will need to use several of its properties: url and method
   */
@@ -29,9 +30,17 @@ var requestHandler = function(request, response) {
     Helpful example: if-else structure- https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/if...else
 
     */
+  var parsedUrl = url.parse(request.url);
+  if (request.method == "GET" && parsedUrl.path == "/listings") {
+    response.statusCode = 200;
+    response.end(listingData);
+  } else {
+    response.statusCode = 404;
+    response.end("Bad gateway error");
+  }
 };
 
-fs.readFile('listings.json', 'utf8', function(err, data) {
+fs.readFile("listings.json", "utf8", function (err, data) {
   /*
     This callback function should save the data in the listingData variable, 
     then start the server. 
@@ -43,18 +52,21 @@ fs.readFile('listings.json', 'utf8', function(err, data) {
     http://stackoverflow.com/questions/17251553/nodejs-request-object-documentation
    */
 
-    //Check for errors
-    /*this resource gives you an idea of the general format err objects and Throwing an existing object.
+  //Check for errors
+  /*this resource gives you an idea of the general format err objects and Throwing an existing object.
     https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/throw#throwing_an_existing_object
    */
-  
 
-   //Save the data in the listingData variable already defined
-  
+  //Save the data in the listingData variable already defined
+  //Check for errors first
+  if (err) throw err;
+  listingData = data;
 
-  //Creates the server
-  
+  // Creates the server
+  server = http.createServer(requestHandler);
   //Start the server
-
-
+  server.listen(port, function () {
+    // Show what port it is running on
+    console.log("Server listening on: http://127.0.0.1:" + port);
+  });
 });
