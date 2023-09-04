@@ -32,7 +32,7 @@ var requestHandler = function (request, response) {
     */
   var parsedUrl = url.parse(request.url);
   if (request.method == "GET" && parsedUrl.path == "/listings") {
-    response.statusCode = 200;
+    response.writeHead(200, { "content-type": "application/json" });
     response.end(JSON.stringify(listingData));
   } else {
     response.statusCode = 404;
