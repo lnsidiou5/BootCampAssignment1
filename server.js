@@ -33,7 +33,7 @@ var requestHandler = function (request, response) {
   var parsedUrl = url.parse(request.url);
   if (request.method == "GET" && parsedUrl.path == "/listings") {
     response.statusCode = 200;
-    response.end(listingData);
+    response.end(JSON.stringify(listingData));
   } else {
     response.statusCode = 404;
     response.end("Bad gateway error");
@@ -60,7 +60,7 @@ fs.readFile("listings.json", "utf8", function (err, data) {
   //Save the data in the listingData variable already defined
   //Check for errors first
   if (err) throw err;
-  listingData = data;
+  listingData = JSON.parse(data);
 
   // Creates the server
   server = http.createServer(requestHandler);
